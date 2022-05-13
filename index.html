@@ -81,10 +81,37 @@
 	<script >
 		$('.js-tilt').tilt({
 			scale: 1.1
-		})
+		});
+		$('.contact1-form').on('submit',function(e){
+			//optional validation code here
+
+			e.preventDefault();
+
+			$.ajax({
+			    url: "https://script.google.com/macros/s/AKfycbxtNiAahn_8Ps5bUCGwcwhLNCoAk8zrUyRHUJAK1kEPV76zkyUS3I3A6BZZmiypV4Cnvw/exec",
+			    method: "POST",
+			    dataType: "json",
+			    data: $(".contact1-form").serialize(),
+			    success: function(response) {
+
+				if(response.result == "success") {
+				    $('.contact1-form')[0].reset();
+				    alert('Thank you for contacting us.');
+				    return true;
+				}
+				else {
+				    alert("Something went wrong. Please try again.")
+				}
+			    },
+			    error: function() {
+
+				alert("Something went wrong. Please try again.")
+			    }
+			})
+		});
 	</script>
 
-<!-- Global site tag (gtag.js) - Google Analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics 
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -93,7 +120,7 @@
 
   gtag('config', 'UA-23581568-13');
 </script>
-
+-->
 <!--===============================================================================================-->
 	<script src="js/main.js"></script>
 
