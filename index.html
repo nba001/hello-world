@@ -1,128 +1,78 @@
+puter js
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-	<title>Contact V1</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--===============================================================================================-->
-	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="css/util.css">
-	<link rel="stylesheet" type="text/css" href="css/main.css">
-<!--===============================================================================================-->
+    <title>Nano Banana Image Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            text-align: center;
+        }
+        textarea {
+            width: 80%;
+            max-width: 500px;
+            height: 100px;
+            font-size: 16px;
+        }
+        button {
+            font-size: 16px;
+            margin-top: 10px;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+        #imageContainer img {
+            margin-top: 20px;
+            max-width: 90%;
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        #loadingSpinner {
+            display: none;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
+    <h1>Nano Banana Image Generator</h1>
+    <textarea id="description" placeholder="Enter your image description here..."></textarea><br>
+    <button id="generateBtn">Generate Image</button>
+    <div id="loadingSpinner">🌀 Generating image...</div>
+    <div id="imageContainer"></div>
 
-	<div class="contact1">
-		<div class="container-contact1">
-			<div class="contact1-pic js-tilt" data-tilt>
-				<img src="images/img-01.png" alt="IMG">
-			</div>
+    <script src="https://js.puter.com/v2/"></script>
+    <script>
+        const generateBtn = document.getElementById('generateBtn');
+        const descriptionInput = document.getElementById('description');
+        const imageContainer = document.getElementById('imageContainer');
+        const loadingSpinner = document.getElementById('loadingSpinner');
 
-			<form class="contact1-form validate-form">
-				<span class="contact1-form-title">
-					Get in touch
-				</span>
+        generateBtn.addEventListener('click', () => {
+            const prompt = descriptionInput.value.trim();
+            if (!prompt) {
+                alert('Please enter a description.');
+                return;
+            }
 
-				<div class="wrap-input1 validate-input" data-validate = "Name is required">
-					<input class="input1" type="text" name="name" placeholder="Name">
-					<span class="shadow-input1"></span>
-				</div>
+            // Clear previous image and show spinner
+            imageContainer.innerHTML = '';
+            loadingSpinner.style.display = 'block';
 
-				<div class="wrap-input1 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
-					<input class="input1" type="text" name="email" placeholder="Email">
-					<span class="shadow-input1"></span>
-				</div>
-
-				<div class="wrap-input1 validate-input" data-validate = "Subject is required">
-					<input class="input1" type="text" name="subject" placeholder="Subject">
-					<span class="shadow-input1"></span>
-				</div>
-
-				<div class="wrap-input1 validate-input" data-validate = "Message is required">
-					<textarea class="input1" name="message" placeholder="Message"></textarea>
-					<span class="shadow-input1"></span>
-				</div>
-
-				<div class="container-contact1-form-btn">
-					<button class="contact1-form-btn">
-						<span>
-							Send Email
-							<i class="fa fa-long-arrow-right" aria-hidden="true"></i>
-						</span>
-					</button>
-				</div>
-			</form>
-		</div>
-	</div>
-
-
-
-
-<!--===============================================================================================-->
-	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/bootstrap/js/popper.js"></script>
-	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/select2/select2.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/tilt/tilt.jquery.min.js"></script>
-	<script >
-		$('.js-tilt').tilt({
-			scale: 1.1
-		});
-		$('.contact1-form').on('submit',function(e){
-			//optional validation code here
-
-			e.preventDefault();
-
-			$.ajax({
-			    url: "https://script.google.com/macros/s/AKfycbxtNiAahn_8Ps5bUCGwcwhLNCoAk8zrUyRHUJAK1kEPV76zkyUS3I3A6BZZmiypV4Cnvw/exec",
-			    method: "POST",
-			    dataType: "json",
-			    data: $(".contact1-form").serialize(),
-			    success: function(response) {
-
-				if(response.result == "success") {
-				    $('.contact1-form')[0].reset();
-				    alert('Thank you for contacting us.');
-				    return true;
-				}
-				else {
-				    alert("Something went wrong. Please try again.")
-				}
-			    },
-			    error: function() {
-
-				alert("Something went wrong. Please try again.")
-			    }
-			})
-		});
-	</script>
-
-<!-- Global site tag (gtag.js) - Google Analytics 
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-23581568-13');
-</script>
--->
-<!--===============================================================================================-->
-	<script src="js/main.js"></script>
-
+            // Generate the image
+            puter.ai.txt2img(prompt, false)
+                .then((image) => {
+                    loadingSpinner.style.display = 'none';
+                    imageContainer.appendChild(image);
+                })
+                .catch((err) => {
+                    loadingSpinner.style.display = 'none';
+                    console.error(err);
+                    alert('Error generating image.');
+                });
+        });
+    </script>
 </body>
 </html>
