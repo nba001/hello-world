@@ -103,7 +103,10 @@
 
     // Helper: fetch an image URL and convert to Base64
     async function imageUrlToBase64(url) {
-      const response = await fetch(url);
+      //const response = await fetch(url);
+      // Use this:
+      const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(url);
+      const response = await fetch(proxyUrl);
       if (!response.ok) throw new Error("Failed to fetch image from URL");
       const blob = await response.blob();
 
@@ -160,3 +163,4 @@
 
 </body>
 </html>
+
