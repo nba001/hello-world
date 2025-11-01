@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Puter.js txt2img Generator</title>
+  <title>Puter.js txt2img Generator (with URL → Base64)</title>
   <script src="https://js.puter.com/v2/"></script>
   <style>
     body {
@@ -80,12 +80,12 @@
       <option value="hd">hd (for DALL-E 3)</option>
     </select>
 
-    <label>Input Image (Base64 string, for Gemini image-to-image only)</label>
-    <textarea id="input_image" rows="3"></textarea>
+    <label>Input Image URL (for Gemini image-to-image only)</label>
+    <input type="url" id="input_image_url" placeholder="https://example.com/image.png" />
 
     <label>Input Image MIME Type</label>
     <select id="input_image_mime_type">
-      <option value="">(none)</option>
+      <option value="">(auto-detect)</option>
       <option value="image/png" selected>image/png</option>
       <option value="image/jpeg">image/jpeg</option>
       <option value="image/jpg">image/jpg</option>
@@ -101,6 +101,22 @@
     const form = document.getElementById('txt2imgForm');
     const output = document.getElementById('output');
 
+    // Helper: fetch an image URL and convert to Base64
+    async function imageUrlToBase64(url) {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Failed to fetch image from URL");
+      const blob = await response.blob();
+
+      // Auto-detect MIME type if not explicitly provided
+      const mimeType = blob.type || "image/png";
+
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve({ base64: reader.result.split(",")[1], mimeType });
+        reader.readAsDataURL(blob);
+      });
+    }
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       output.innerHTML = "<p>Generating image... please wait.</p>";
@@ -109,28 +125,32 @@
       const testMode = document.getElementById('testMode').value === 'true';
       const model = document.getElementById('model').value;
       const quality = document.getElementById('quality').value;
-      const input_image = document.getElementById('input_image').value.trim();
-      const input_image_mime_type = document.getElementById('input_image_mime_type').value;
+      const imageUrl = document.getElementById('input_image_url').value.trim();
+      const userMime = document.getElementById('input_image_mime_type').value;
 
-      const options = {
-        model,
-        quality,
-      };
-
-      if (input_image) options.input_image = input_image;
-      if (input_image_mime_type && input_image) options.input_image_mime_type = input_image_mime_type;
+      const options = { model, quality };
 
       try {
+        // If user provided an image URL, convert it to base64
+        if (imageUrl && model === "gemini-2.5-flash-image-preview") {
+          const { base64, mimeType } = await imageUrlToBase64(imageUrl);
+          //console.log(base64)
+          options.input_image = base64;
+          options.input_image_mime_type = userMime || mimeType;
+        }
+
+        // Call puter.ai.txt2img()
         const image = await puter.ai.txt2img(prompt, testMode ? true : options);
-        if (typeof image === "string") {
-          // const img = document.createElement("img");
-          // img.src = image;
+
+        // if (typeof image === "string") {
+        //   const img = document.createElement("img");
+        //   img.src = image;
           output.innerHTML = "";
           output.appendChild(image);
-        } else {
-          output.innerHTML = "<p>Unexpected output. Check console.</p>";
-          console.log(image);
-        }
+        // } else {
+        //   output.innerHTML = "<p>Unexpected output. Check console.</p>";
+        //   console.log(image);
+        // }
       } catch (err) {
         output.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
         console.error(err);
